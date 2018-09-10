@@ -18,6 +18,7 @@ from django.urls import path
 
 from checkins import views
 from accounts import views as accounts_views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,5 +27,6 @@ urlpatterns = [
     path('checkin_list/',views.checkins_list,name='checkin_list'),
     path('signup/',accounts_views.signup,name='signup'),
     path('test/output/',views.checkins_list,name='output'),
+    path('logout/',auth_views.LogoutView.as_view(),name='logout')
 
 ]

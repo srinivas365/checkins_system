@@ -2,6 +2,22 @@
 
 
 {% block body %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{% url 'home' %}">Django check-in system</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="{% url 'home' %}">view reviews</a></li>
+    </ul>
+      <ul class="nav navbar-nav navbar-right">
+      <li><a href="#"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a></li>
+
+    </ul>
+
+  </div>
+</nav>
  <div class="container">
     <div class="row">
         <div class="col-lg-4">
@@ -41,7 +57,7 @@
                 <input class="form-control" id="longitude" name="longitude" readonly>
             </div>
             <div class="form-group">
-                <textarea class="form-control" id="review" name="review" rows="5"></textarea>
+                <textarea class="form-control" id="review" name="review" rows="5" placeholder="Give a review about this place ........."></textarea>
             </div>
             <button type="submit" class="btn btn-success">Add</button>
         </form>
@@ -123,7 +139,7 @@
             $('#latitude').val($('#lat').val());
             $('#longitude').val($('#long').val());
 
-            $('#checkinModal').modal('show');
+            $('#checkinModal').modal();
 
         });
 

@@ -4,8 +4,7 @@ from .models import Checkins
 
 # Create your views here.
 def home(request):
-	checkins=Checkins.objects.all()
-	return render(request,'index_map.html')
+	return render(request,'map2.html')
 
 def checkins_list(request):
 	if request.method=='POST':
