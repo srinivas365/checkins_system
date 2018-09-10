@@ -9,3 +9,5 @@ class Checkins(models.Model):
 	longitude=models.FloatField()
 	place_name=models.CharField(max_length=500)
 	review=models.CharField(max_length=1000)
+	last_updated=models.DateTimeField(auto_now_add=True)
+	updated_by=models.ForeignKey(User,null=True,related_name='+',on_delete=models.PROTECT)

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+<div class="container">
+      <ol class="breadcrumb my-4">
+        <li class="breadcrumb-item active">checkins</li>
+      </ol>
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Place</th>
+            <th>latitude</th>
+            <th>longitude</th>
+            <th>review</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for checkin in checkins %}
+            <tr>
+              <td>
+                {{ checkin.place_name }}
+              </td>
+              <td class="align-middle">
+				  {{ checkin.latitude }}
+			  </td>
+              <td class="align-middle">
+				  {{ checkin.longitude }}
+			  </td>
+              <td class="align-middle">
+				  {{ checkin.review }}
+			  </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+{% endblock %}

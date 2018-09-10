@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+ <div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            Latitude: <input id="lat" name="lat" val="40.713956" />
+        </div>
+        <div class="col-lg-4">
+            Longitude: <input id="long" name="long" val="74.006653" />
+        </div>
+        <div class="col-lg-4">
+             <button type="button" class="btn btn-success" id="add_checkin" name="add_checkin">Add checkin</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div id="map_canvas" style="width: 100%; height: 500px;"></div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="checkinModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add checkin and review</h4>
+      </div>
+      <div class="modal-body">
+        <form action="output/" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="latitude">Latitude</label>
+                <input class="form-control" id="latitude" name="latitude" readonly>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude</label>
+                <input class="form-control" id="longitude" name="longitude" readonly>
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" id="review" name="review" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Add</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsNVb5At5uJi4B305c9kqLuywtU7TyaiU&callback=initialize" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+        var map;
+        var marker;
+        function initialize() {
+          var latu=40.713956;
+          var longu=-74.006653
+          var myLatlng = new google.maps.LatLng(latu, longu);
+           document.getElementById("lat").value = latu;
+           document.getElementById("long").value = longu;
+          var myOptions = {
+              zoom: 8,
+              center: myLatlng,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+          map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+
+          marker = new google.maps.Marker({
+              draggable: true,
+              position: myLatlng,
+              map: map,
+              title: "Your location"
+          });
+
+            map.addListener('click', function(event) {
+                document.getElementById("lat").value = event.latLng.lat();
+              document.getElementById("long").value = event.latLng.lng();
+              placeMarkerAndPanTo(event.latLng, map);
+            });
+
+
+          google.maps.event.addListener(marker, 'dragend', function (event) {
+              document.getElementById("lat").value = event.latLng.lat();
+              document.getElementById("long").value = event.latLng.lng();
+              //infoWindow.open(map, marker);
+          });
+        }
+
+        function placeMarkerAndPanTo(latLng, map) {
+
+          if(marker==null){
+              marker = new google.maps.Marker({
+              position: latLng,
+              map: map,
+              draggable: true,
+              animation: google.maps.Animation.DROP
+            });
+          }else{
+            marker.setPosition(latLng);
+          }
+          map.panTo(latLng);
+
+        }
+
+        $(document).on('click','#add_checkin',function() {
+            // body...
+            console.log("model opened");
+            console.log($('#lat').val());
+            console.log($('#long').val());
+            $('#latitude').val($('#lat').val());
+            $('#longitude').val($('#long').val());
+
+            $('#checkinModal').modal('show');
+
+        });
+
+
+</script>
+
+{% endblock %}
