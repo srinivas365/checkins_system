@@ -14,19 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include,reverse_lazy
 
 from checkins import views
-from accounts import views as accounts_views
 from django.contrib.auth import views as auth_views
+from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.home,name='home'),
+    path('',TemplateView.as_view(template_name='home.html'),name='home'),
+    path('delete_record',views.delete_record,name='delete_record'),
     path('test/',views.test,name='test'),
     path('checkin_list/',views.checkins_list,name='checkin_list'),
-    path('signup/',accounts_views.signup,name='signup'),
-    path('test/output/',views.checkins_list,name='output'),
-    path('logout/',auth_views.LogoutView.as_view(),name='logout')
+    path('password-change/', auth_views.PasswordChangeView.as_view(success_url=reverse_lazy('account:password_change_done')),name='password_change'), path('accounts/',include('accounts.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 
 ]

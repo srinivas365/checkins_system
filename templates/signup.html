@@ -3,10 +3,9 @@
 {% block body %}
 <div class="container">
     <h2>Sign up</h2>
-    <form method="post" novalidate>
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        {% include 'includes/form.html' %}
         <button type="submit" class="btn btn-primary">Create an account</button>
     </form>
 </div>

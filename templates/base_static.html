@@ -1,0 +1,21 @@
+{% load static %}<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Dcs{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    {% block stylesheet %}
+
+    {% endblock %}
+</head>
+<body>
+    {% block body %}
+
+
+    {% endblock %}
+</body>
+{% block script %}
+
+
+{% endblock %}
+</html>

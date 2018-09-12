@@ -8,12 +8,18 @@
       <a class="navbar-brand" href="{% url 'home' %}">Django check-in system</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Home</a></li>
-      <li><a href="{% url 'home' %}">view reviews</a></li>
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li class="active"><a href="{% url 'checkin_list' %}">view reviews</a></li>
     </ul>
-      <ul class="nav navbar-nav navbar-right">
-      <li><a href="#"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a></li>
-
+    <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ user.username }}
+            <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">reset password</a></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </li>
     </ul>
 
   </div>
@@ -29,9 +35,11 @@
             <th>latitude</th>
             <th>longitude</th>
             <th>review</th>
+            <th>Update</th>
+            <th>Delete</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="table_body">
           {% for checkin in checkins %}
             <tr>
               <td>
@@ -46,10 +54,45 @@
               <td class="align-middle">
 				  {{ checkin.review }}
 			  </td>
+                <td class="align-middle">
+                    <a class="btn btn-success update" id="{{ checkin.id}}" >Update</a>
+                </td>
+                <td class="align-middle">
+                    <a href="" class="btn btn-danger delete" id="{{ checkin.id }}">Delete</a>
+                </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </body>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+$(document).on('click','.update',function(){
+   var id=$(this).attr('id');
+   console.log(id);
+
+});
+/*$(document).on('click','.delete',function(){
+   var id=$(this).attr('id');
+   console.log(id);
+    $.ajax({
+        url:'/delete_record',
+        type: "POST",
+        dataType: "json",
+        data: {
+            id:id,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+        success : function(json) {
+            alert("Successfully sent the URL to Django");
+        },
+        error : function(xhr,errmsg,err) {
+            alert("Could not send URL to Django. Error: " + xhr.status + ": " + xhr.responseText);
+        }
+    });
+});*/
+</script>
 {% endblock %}

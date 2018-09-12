@@ -1,18 +1,13 @@
-from django.shortcuts import render,redirect
-from django.contrib.auth.forms import  UserCreationForm
-from django.contrib.auth import login as auth_login #updated version
+from django.shortcuts import render
+
 # Create your views here.
+
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import  reverse_lazy
+from django.views import generic
 from .forms import SignUpForm
 
-def signup(request):
-    if request.method=="POST":
-        form=SignUpForm(request.POST)
-        if form.is_valid():
-            user=form.save()
-            auth_login(request,user)
-            return redirect('test')
-    else:
-        form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
-
-
+class SignUp(generic.CreateView):
+    form_class=SignUpForm
+    success_url=reverse_lazy('login')
+    template_name='signup.html'

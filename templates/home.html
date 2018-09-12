@@ -1,60 +1,164 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Marker Animations</title>
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script>
+{% extends 'base.html' %}
 
-      // The following example creates a marker in Stockholm, Sweden using a DROP
-      // animation. Clicking on the marker will toggle the animation between a BOUNCE
-      // animation and no animation.
 
-      var marker;
+{% block body %}
+{% if user.is_authenticated %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{% url 'home' %}">Django check-in system</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="{% url 'checkin_list' %}">view reviews</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ user.username }}
+            <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'password_change' %}">reset password</a></li>
+              <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
 
-      function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 13,
-          center: {lat: 20.268455824834792, lng: 85.84099235520011}
-        });
+  </div>
+</nav>
+ <div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            Latitude: <input id="lat" name="lat" val="40.713956" />
+        </div>
+        <div class="col-lg-4">
+            Longitude: <input id="long" name="long" val="74.006653" />
+        </div>
+        <div class="col-lg-4">
+             <button type="button" class="btn btn-success" id="add_checkin" name="add_checkin">Add checkin</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div id="map_canvas" style="width: 100%; height: 500px;"></div>
+    </div>
+</div>
 
-        marker = new google.maps.Marker({
-          map: map,
-          draggable: true,
-          animation: google.maps.Animation.DROP,
-          position: {lat: 59.327, lng: 18.067}
-        });
-        //marker.addListener('click', toggleBounce);
-        google.maps.event.addListener(marker, "click", function (event) {
-                    alert(this.position);
-          }); //end addListener
+<!-- Modal -->
+<div id="checkinModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add checkin and review</h4>
+      </div>
+      <div class="modal-body">
+        <form action="checkin_list/" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="latitude">Latitude</label>
+                <input class="form-control" id="latitude" name="latitude" readonly>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude</label>
+                <input class="form-control" id="longitude" name="longitude" readonly>
+            </div>
+            <div class="form-group">
+                <label for="place_name">Longitude</label>
+                <input class="form-control" id="place_name" name="place_name" placeholder="place name (optional)">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" id="review" name="review" rows="5" placeholder="Give a review about this place ........."></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Add</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
 
-      }
+  </div>
+</div>
 
-      function toggleBounce() {
-        if (marker.getAnimation() !== null) {
-          marker.setAnimation(null);
-        } else {
-          marker.setAnimation(google.maps.Animation.BOUNCE);
+
+{% else %}
+<p>You are not logged in</p>
+<a href="{% url 'login' %}">Login</a>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsNVb5At5uJi4B305c9kqLuywtU7TyaiU&callback=initialize" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+        var map;
+        var marker;
+        function initialize() {
+          var latu=40.713956;
+          var longu=-74.006653
+          var myLatlng = new google.maps.LatLng(latu, longu);
+           document.getElementById("lat").value = latu;
+           document.getElementById("long").value = longu;
+          var myOptions = {
+              zoom: 8,
+              center: myLatlng,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+          map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+
+          marker = new google.maps.Marker({
+              draggable: true,
+              position: myLatlng,
+              map: map,
+              title: "Your location"
+          });
+
+            map.addListener('click', function(event) {
+                document.getElementById("lat").value = event.latLng.lat();
+              document.getElementById("long").value = event.latLng.lng();
+              placeMarkerAndPanTo(event.latLng, map);
+            });
+
+
+          google.maps.event.addListener(marker, 'dragend', function (event) {
+              document.getElementById("lat").value = event.latLng.lat();
+              document.getElementById("long").value = event.latLng.lng();
+              //infoWindow.open(map, marker);
+          });
         }
-      }
-    </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsNVb5At5uJi4B305c9kqLuywtU7TyaiU&callback=initMap" type="text/javascript"></script>
 
-  </body>
-</html>
+        function placeMarkerAndPanTo(latLng, map) {
+
+          if(marker==null){
+              marker = new google.maps.Marker({
+              position: latLng,
+              map: map,
+              draggable: true,
+              animation: google.maps.Animation.DROP
+            });
+          }else{
+            marker.setPosition(latLng);
+          }
+          map.panTo(latLng);
+
+        }
+
+        $(document).on('click','#add_checkin',function() {
+            // body...
+            console.log("model opened");
+            console.log($('#lat').val());
+            console.log($('#long').val());
+            $('#latitude').val($('#lat').val());
+            $('#longitude').val($('#long').val());
+
+            $('#checkinModal').modal();
+
+        });
+
+
+</script>
+
+{% endblock %}
