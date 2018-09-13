@@ -40,7 +40,6 @@ INSTALLED_APPS = [
 
     #apps created by me
     'checkins',
-    'widget_tweaks',
     'accounts',
 
 ]
